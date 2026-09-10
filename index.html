@@ -911,22 +911,15 @@ function verdict(status, headline, reason){
 }
 
 
-/* Basemap tiles. CARTO first (renders cleanly and is permissive about
-   embedding); if those are blocked, fall back to OpenStreetMap. Both free. */
+/* Basemap tiles. OpenStreetMap's standard tile server — free, no API key,
+   no account. (CARTO's tiles used to work the same way but now require a
+   key and watermark unregistered requests, so we go straight to OSM.) */
 function makeTiles(){
-  const layer = L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 19, subdomains:"abcd",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  return L.tileLayer(
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
-
-  let failed = 0, swapped = false;
-  layer.on("tileerror", () => {
-    if (swapped || ++failed < 3) return;
-    swapped = true;
-    layer.setUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png");
-  });
-  return layer;
 }
 
 function siteCard(site, placeName){
